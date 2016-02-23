@@ -28,20 +28,41 @@ public class wikiCrawl {
 		for (Element li : listItems) {
 			String link = li.select("a[href]").last().attr("abs:href");
 			String topic = li.select("a[href]").last().text();
-			mainLinks.put(topic, link);
+			if (!(topic.equals("Index") || topic.equals("Glossary") 
+					|| topic.equals("Links") 
+					|| topic.equals("Libraries, extensions and frameworks") 
+					|| topic.equals("Understanding gradients")
+					|| topic.equals("About this book")
+					|| topic.equals("History of Java")
+					|| topic.equals("Overview of the Java programming language")
+					|| topic.equals("The Java platform (JRE & JDK)")
+					|| topic.equals("Installing Java on Your Computer")
+					|| topic.equals("Compiling programs")
+					|| topic.equals("Running Java programs")
+					|| topic.equals("Understanding a Java program")
+					|| topic.equals("Java IDEs")
+					|| topic.equals("Compiling programs")))
+				mainLinks.put(topic, link);
 		}
 	}
-	private static void writeToFile(String title, String body) 
+	private static void writeToFile(String title, HashMap<String, String> map) 
 			throws IOException {
-		File file = new File("data/" + title + ".txt");
-		if (!file.exists()) {
-			file.createNewFile();
+		File dir = new File("/Users/hariniravichandran/Documents/"
+				+ "AWData/" + title);
+		dir.mkdirs();
+		for (Map.Entry<String, String> entry : map.entrySet()) {
+			String filename = entry.getKey();
+			String content = entry.getValue();
+			String fullPath = dir.getAbsolutePath() + "/" + filename;
+			File file = new File(fullPath + ".txt");
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			System.out.print("Writing file: "+ fullPath +".txt\n");
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			fw.write(content);
+			fw.close();
 		}
-		System.out.print("Writing file: "+title+".txt\n");
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(body);
-		bw.close();
 	}
 	private static void parsePage(String url) throws IOException {
 		HashMap<String, String> pageContent = 
@@ -50,26 +71,66 @@ public class wikiCrawl {
 		Document doc = Jsoup.connect(url).get();
 		Element wrapper = doc.getElementById("mw-content-text");
 		Elements e = wrapper.getElementsByClass("noprint").remove();
-		e = wrapper.getElementsByClass("wikitable").remove();
+		e = wrapper.getElementsByClass("wikitable");
+		if (e.size() > 0)
+			wrapper.getElementsByClass("wikitable").first().remove();
 		e = wrapper.getElementsByClass("collapsible").remove();
 		e = wrapper.getElementsByClass("mw-editsection").remove();
 		e = wrapper.select("a:contains(Edit)").remove();
-		
-		//String fullText = wrapper.text();
+		e = wrapper.getElementsByClass("metadata topicon").remove();
+		e = wrapper.getElementsByTag("noscript").remove();
+		e = wrapper.getElementsByTag("script").remove();
 
-		Elements code = wrapper.getElementsByTag("table").remove();
-		code.addAll(wrapper.getElementsByTag("pre").remove());
-		String text = wrapper.text();
-		pageContent.put("text", text);
-		pageContent.put("code", code.text());
+		Elements allElements = wrapper.getAllElements();
+		Elements temp = allElements;
 		
+		String heading = "";
+		if (allElements.select("h2").size() > 0) 
+			heading = "h2";
+		else if (allElements.select("h3").size() > 0)
+			heading = "h3";
+		else
+			heading = "null";
+
+		String text = "";
+		String key = "Introduction";
+		if (!heading.equals("null")) {
+			Elements elem = allElements.select(heading);
+			Element i = allElements.get(0).child(0);
+			while (i != null && !(i.tagName().equals(heading))) {
+				text += i.text();
+				i = i.nextElementSibling();
+			}
+			System.out.println(key + "\n");
+			pageContent.put(key, text);
+			if (i != null) {
+				for (Element el : elem) {
+					text = "";
+					key = el.text().replace("/", "-");
+					i = i.nextElementSibling();
+					if (i == null)
+						break;
+					while (!(i.tagName().equals(heading))) {
+						text = text + "\n" + i.text();
+						if (i.nextElementSibling() == null) {
+							break;
+						}
+						i = i.nextElementSibling();
+					}
+					System.out.print(key + "\n");
+					pageContent.put(key, text);
+				}
+			}
+		} else {
+			key = "Introduction";
+			Elements paras = wrapper.select("p");
+			text = paras.text();
+			pageContent.put(key, text);
+		}
 		int last = url.lastIndexOf("/");
 		String topic = url.substring(last+1);
-		content.put(topic, pageContent);
-		//System.out.println(content.toString());
-		System.out.print("Crawled: "+url+"\n");
-		String body = text + "\n" + code.text();
-		writeToFile(topic, body);
+		writeToFile(topic, pageContent);
+		
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -82,10 +143,10 @@ public class wikiCrawl {
 			parsePage(link);
 		}
 		
-		/*
-		parsePage("https://en.wikibooks.org/wiki/Java_Programming/"
-				+ "Preventing_NullPointerException");
-		*/
+		
+//		parsePage("https://en.wikibooks.org/wiki/Java_Programming/"
+//				+ "Threads_and_Runnables");
+		
 	} 	 	
 
 }
