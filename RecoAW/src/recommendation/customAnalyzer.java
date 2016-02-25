@@ -49,8 +49,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class customAnalyzer extends Analyzer {	
-	public static String mainDir = "/Users/hariniravichandran/Documents/"
-			+ "AWAssign2/";
+	public static String mainDir = "<project_main_folder_path>";
 	@Override
 	protected TokenStreamComponents createComponents(String arg0) {
 		// TODO Auto-generated method stub
@@ -106,7 +105,6 @@ public class customAnalyzer extends Analyzer {
 	}
 	private static void writeToFile(String fileName, String text) throws IOException {
 		File dest = new File(mainDir);
-		//dest.mkdirs();
 		String fullPath = dest + "/" + fileName;
 		File file = new File(fullPath);
 		file.createNewFile();
@@ -141,7 +139,6 @@ public class customAnalyzer extends Analyzer {
 		HashMap<String, ArrayList<String>> recoMap = 
 				new HashMap<String, ArrayList<String>>();
 		while ((line = br.readLine()) != null) {
-			//System.out.println(line);
 			postCount++;
 			String querystr = line;
 			//Parse every query.
@@ -182,20 +179,13 @@ public class customAnalyzer extends Analyzer {
 							+ "</span></code></pre>";
 				recoArray.add(recommendation);
 				
-//				String destination = d.get("filename");
-//				int index = destination.lastIndexOf("/");
-//				destination = destination.substring(index+1);
-//				writeToFile(destination, recommendation);
-//				System.out.println(d.get("contents"));
 			}
-			//System.out.println(key + recoArray.toString());
+
 			recoMap.put(key, recoArray);
 			reader.close();
 		}
-		//System.out.println(recoMap.toString());
 		Gson gson = new Gson();
 		String json = gson.toJson(recoMap);
-		//System.out.println(json);
 		writeToFile("recoOutput.json", json);
 		
 	}
