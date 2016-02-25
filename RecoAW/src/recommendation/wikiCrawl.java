@@ -16,6 +16,8 @@ import java.io.IOException;
 
 import java.util.*;
 public class wikiCrawl {
+	public static String location = "/Users/hariniravichandran/Documents/"
+				+ "AWAssign2/WikiData/";
 	public static HashMap<String, String> mainLinks = 
 			new HashMap<String, String>();
 	public static HashMap<String, HashMap<String, String>> content = 
@@ -47,23 +49,21 @@ public class wikiCrawl {
 	}
 	private static void writeToFile(String title, HashMap<String, String> map) 
 			throws IOException {
-		File dir = new File("/Users/hariniravichandran/Documents/"
-				+ "AWData/" + title);
+		File dir = new File(location + title);
 		dir.mkdirs();
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			String filename = entry.getKey();
 			String content = entry.getValue();
 			String fullPath = dir.getAbsolutePath() + "/" + filename;
 			File file = new File(fullPath + ".txt");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
+			file.createNewFile();
 			System.out.print("Writing file: "+ fullPath +".txt\n");
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			fw.write(content);
 			fw.close();
 		}
 	}
+
 	private static void parsePage(String url) throws IOException {
 		HashMap<String, String> pageContent = 
 				new HashMap<String, String>();
@@ -96,36 +96,53 @@ public class wikiCrawl {
 		String key = "Introduction";
 		if (!heading.equals("null")) {
 			Elements elem = allElements.select(heading);
+			int c = 0;
 			Element i = allElements.get(0).child(0);
 			while (i != null && !(i.tagName().equals(heading))) {
-				text += i.text();
+				//text += i.text();
+				pageContent.put(key+"_"+c, i.text());
+				c++;
 				i = i.nextElementSibling();
 			}
 			System.out.println(key + "\n");
 			pageContent.put(key, text);
 			if (i != null) {
 				for (Element el : elem) {
+					int ctr = 0;
 					text = "";
 					key = el.text().replace("/", "-");
 					i = i.nextElementSibling();
 					if (i == null)
 						break;
 					while (!(i.tagName().equals(heading))) {
-						text = text + "\n" + i.text();
+						//text = text + "\n" + i.text();
+//						if (i.tagName().equals("pre")) {
+//							text = "<pre><code>" + i.text() + "</code></pre>";
+//							//i = i.nextElementSibling();
+//						}
+//						else
+//							text = i.text();
+						text = i.text();
+						pageContent.put(key+"_"+ctr, text);
+						ctr++;
 						if (i.nextElementSibling() == null) {
 							break;
 						}
 						i = i.nextElementSibling();
 					}
 					System.out.print(key + "\n");
-					pageContent.put(key, text);
+					//pageContent.put(key, text);
 				}
 			}
 		} else {
 			key = "Introduction";
 			Elements paras = wrapper.select("p");
-			text = paras.text();
-			pageContent.put(key, text);
+			int count = 0;
+			for (Element p: paras) {
+				text = p.text();
+				pageContent.put(key+"_"+count, text);
+				count++;
+			}
 		}
 		int last = url.lastIndexOf("/");
 		String topic = url.substring(last+1);
