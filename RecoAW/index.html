@@ -1,0 +1,313 @@
+<html>
+<head>
+	<title>Recommendations</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="script.js"></script>
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,300,700,600' rel='stylesheet' type='text/css'>
+	<style>
+		body {
+			font-family: 'Open Sans';
+			background: #33495F !important;
+		}
+		.projectTitle {
+			font-weight: bold;
+			color: #333;
+			width: 960px;
+		    height: auto;
+		    position: relative;
+		    margin-left: 50%;
+		    left: -480px;
+			text-align: left;
+			font-size: 24px;
+			color:#fff;
+		}
+		.projectDesc {
+			color: #f6f6f6;
+			width: 960px;
+		    height: auto;
+		    position: relative;
+		    top: 15px;
+		    margin-left: 50%;
+		    left: -480px;
+			text-align: left;
+			font-size: 14px;
+		}
+		.wrapper {
+			width: 960px;
+			top: 360px;
+		    height: auto;
+		    position: absolute;
+		    margin-left: 50%;
+		    /*border-right: solid 1px #aaa;
+		    border-left: solid 1px #aaa;*/
+		    left: -480px;
+		}
+
+		.post{
+		    margin:25px 55px;
+		    perspective: 500;
+		    -webkit-perspective: 500;
+		    -moz-perspective: 500;
+		    -ms-perspective: 500;
+		    -o-perspective: 500;
+		    width:200px;
+		    height:200px;
+		    transform-style:preserve-3d;
+		    -webkit-transform-style:preserve-3d;
+		    -moz-transform-style:preserve-3d;
+		    -o-transform-style:preserve-3d;
+		    cursor:pointer;
+		    /* Animate the transitions */
+		    -webkit-transition:1s; 
+		    -moz-transition:1s; 
+		    -ms-transition:1s; 
+		    -o-transition:1s; 
+		    transition:1s; 
+		    text-align:center;
+		    float:left;
+		    word-wrap: break-word;
+		    text-overflow: ellipsis;
+		    
+		}
+
+		.post.half{
+			width:470px;
+			margin:5px 5px;
+		}
+
+		.post.quarter {
+			width: 230px;
+			margin: 5px 5px;
+		}
+
+		.front .post-title {
+		    font-size: 20px;
+		    color: #fff;
+		    margin: 10px 0;
+		    position: relative;
+		    width:100%;
+		    text-align: left;
+		    left: 10px;
+		    top: 10px;
+		    text-transform: capitalize;
+		}
+
+		.flip{
+		  transform:rotateY(-180deg) scale(1.2,1.2);
+		  -webkit-transform:rotateY(-180deg) scale(1.2,1.2);
+		  -moz-transform:rotateY(-180deg);
+		  -o-transform:rotateY(-180deg);
+		  -ms-transform:rotateY(-180deg);
+		  background-color:#FF5959;
+		  position: absolute !important;
+		  width: 110% !important;
+    	  height: 105%!important;
+          position: absolute !important;
+    	  top: 30px !important;
+    	  left: -5% !important;
+		  z-index: 99;
+		    
+		}
+
+
+		/* hide back of pane during swap */
+		.front, .back {
+			backface-visibility: hidden;
+
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		/* front pane, placed above back */
+		.front {
+			z-index: 2;
+			/* for firefox 31 */
+			transform: rotateY(0deg);
+			width: 100%;
+			height: 100%;
+		}
+
+		/* back, initially hidden pane */
+		.back {
+			transform: rotateY(180deg);
+			display: none;
+		}
+
+		.flip .back {
+			transform: rotateY(180deg);
+		    position: relative;
+		    display: block;
+		    position: absolute;
+		    top: 0px;
+		    left: 0px;
+		    backface-visibility: visible;
+		}
+
+		.flip .front {
+			display: none;
+		}
+
+		.post {
+			border-radius: 2px;
+			font-size: 14px;
+			line-height: 22px;
+		}
+		.post-inner {
+			margin: 2px 2px;
+			position: relative;
+			width: 100%;
+		}
+
+		.back .post-inner {
+			width: 98%;
+			height: 95%;
+			max-height: 85%;
+			overflow: hidden;
+
+		}
+
+		.back .content {
+			margin-top: 15px;
+		    margin-bottom: 25px;
+		    overflow: scroll;
+		    padding-bottom: 15px;
+		    max-height: 600px;
+		    height: 600px;
+		}
+
+		.back .post-title2 {
+			position: relative;
+			margin: 10px 0;
+			font-size: 24px;
+			color: #fff;
+		}
+		.back .post-content {
+			margin: 5px;
+			text-align: left;
+			float: left;
+			width: 25%;
+			color: #fff;
+			padding-top: 20px;
+			overflow: scroll;
+			max-height: 600px;
+		}
+
+		.answer{
+			background: #A93536 !important
+		}
+		
+		.accepted-answer {
+			background: #8CC7DF !important;
+		}
+		
+		.question {
+			background: #CCB361 !important;
+		}
+		.content {
+			margin: 2px;
+			padding: 0;
+			overflow: hidden;
+			position: relative;
+			max-height: 80%;
+			text-overflow: ellipsis;
+			max-width: 100%;
+		}
+
+		.front .content {
+			text-align: left;
+			font-size: 14px;
+			color: #fff;
+			opacity: 0.6;
+			position: relative;
+			left: 10px;
+		}
+
+		.post:hover .front .content {
+			color: #fff;
+			opacity: 1;
+		}
+		.toggler {
+			color: #1d6ece;
+			text-decoration: underline;
+			font-size: 12px;
+			position: absolute;
+			bottom: -20px;
+			text-align: center;
+			width: 100%
+		}
+		
+
+		.front .toggler {
+			bottom: 5px;
+		}
+		.closer {
+			display: none;
+		}
+		.flip .closer {
+			display: block;
+			position: absolute;
+			top: -15px;
+			left: -15px;
+			background: white;
+			border: solid 1px #666;
+			width: 30px;
+			height: 30px;
+			border-radius: 15px;
+			line-height: 30px;
+			z-index:1000;
+
+		}
+
+
+		.recoList li{
+			text-align: left;
+			margin: 10px 0;
+		}
+
+		.recoList li code {
+			font-family: monospace;
+		    background: #f6f6f6;
+		    border: solid 1px #aaa;
+		    display: block;
+		    width: 600px;
+		    padding: 10px;
+		}
+
+		.footer {
+			    position: absolute;
+    bottom: 0;
+    top: 1000px;
+    /* margin: auto auto; */
+    width: 960px;
+    margin-left: 960px;
+    left: -50%;
+		}
+		.makeBold {
+			color: #A4A4A4;
+			font-size: 16px;
+		}
+	</style>
+</head>
+<body>
+
+	<div class="projectTitle">Java WikiBooks Recommendation</div>
+	<div class="projectDesc">
+		Content-based recommendation of Java Programming resources for StackOverflow posts - Data was crawled from WikiBooks using <strong class="makeBold">Jsoup</strong>, and stored in different files after slicing. <strong class="makeBold">Slicing</strong> was done by separating the content into text and code, and then associating each chunk with its corresponding sub-heading in the page. After <strong class="makeBold">tokenizing</strong> and <strong class="makeBold">filtering</strong> the document content, the <strong class="makeBold">Analyzer</strong> module in Apache Lucene was used to build an <strong class="makeBold">index file</strong> for all the <strong>terms</strong> where each term is associated with their respective documents. <strong class="makeBold">Searching</strong> was performed using the same Analyzer after passing the query string, which returns the top ten recommendations based on <strong class="makeBold">similarity</strong>	 to the query.
+	</div>
+	<br/> <br/>
+	<div class="projectTitle">Additional Implementation</div>
+	<div class="projectDesc">
+		A <strong class="makeBold">custom Analyzer</strong> was built to replace the StandardAnalyzer of Lucene, to tokenize, filter and stem the documents.<br/>
+		Stemming was performed on the document content using the <strong class="makeBold">Porter Stemming</strong> algorithm.</br/>
+		Document similarity was determined using <strong class="makeBold">BM25 similarity</strong>, overriding the default similarity of Lucene.<br/>
+		Crawled a bunch of pages from the <strong class="makeBold">Oracle Java Tutorial</strong> website to enhance the quality of recommendations.<br/>
+		The tiles below are <strong class="makeBold">color-coded</strong> based on the type of the StackOverflow queries given - Questions, Answers, or Accepted-Answers.<br/>
+	</div>
+	<div id="wrapper" class="wrapper">
+	</div>
+	<div class="footer">	
+	</div>
+</body>
+</html>
