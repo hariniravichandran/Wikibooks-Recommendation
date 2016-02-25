@@ -16,8 +16,7 @@ import java.io.IOException;
 
 import java.util.*;
 public class wikiCrawl {
-	public static String location = "/Users/hariniravichandran/Documents/"
-				+ "AWAssign2/WikiData/";
+	public static String location = "<project_main_folder_path>";
 	public static HashMap<String, String> mainLinks = 
 			new HashMap<String, String>();
 	public static HashMap<String, HashMap<String, String>> content = 
@@ -115,13 +114,6 @@ public class wikiCrawl {
 					if (i == null)
 						break;
 					while (!(i.tagName().equals(heading))) {
-						//text = text + "\n" + i.text();
-//						if (i.tagName().equals("pre")) {
-//							text = "<pre><code>" + i.text() + "</code></pre>";
-//							//i = i.nextElementSibling();
-//						}
-//						else
-//							text = i.text();
 						text = i.text();
 						pageContent.put(key+"_"+ctr, text);
 						ctr++;
@@ -131,7 +123,6 @@ public class wikiCrawl {
 						i = i.nextElementSibling();
 					}
 					System.out.print(key + "\n");
-					//pageContent.put(key, text);
 				}
 			}
 		} else {
@@ -159,11 +150,7 @@ public class wikiCrawl {
 			System.out.print("URL: " + link + "\n");
 			parsePage(link);
 		}
-		
-		
-//		parsePage("https://en.wikibooks.org/wiki/Java_Programming/"
-//				+ "Threads_and_Runnables");
-		
+
 	} 	 	
 
 }
